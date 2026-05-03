@@ -8,6 +8,7 @@ dependencies = [
     "alembic>=1.18.4",
     "asyncpg>=0.31.0",
     "fastapi>=0.135.3",
+    "gunicorn>=25.3.0",
     "langchain>=1.2.14",
     "langchain-chroma>=1.1.0",
     "langchain-classic>=1.0.3",

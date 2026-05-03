@@ -96,7 +96,6 @@ MyKnowledgeRAG/                     # Monorepo root
 │
 ├── .gitignore                      # Root-level gitignore
 ├── .editorconfig                   # Consistent editor formatting
-├── docker-compose.yml              # One-command local dev stack
 └── README.md                       # You are here
 ```
 
@@ -141,36 +140,48 @@ MyKnowledgeRAG/                     # Monorepo root
 | [uv](https://docs.astral.sh/uv/) | latest | Python package manager |
 | [Node.js](https://nodejs.org) | ≥ 18 LTS | Frontend runtime |
 | [npm](https://npmjs.com) | ≥ 9 | Frontend package manager |
-| [PostgreSQL](https://postgresql.org) | ≥ 15 | Document metadata store |
-| [Docker](https://docker.com) | optional | One-command setup |
+| [PostgreSQL](https://postgresql.org) / [Neon](https://neon.tech) | ≥ 15 | Document metadata store |
 
 ---
 
-### Option A — Docker (Recommended)
+### Option A — Deploy on Render (Recommended)
 
-> Starts the full stack (Postgres + Backend + Frontend) with a single command.
+> The repo includes a `render.yaml` [Blueprint](https://render.com/docs/blueprint-spec) — Render reads it automatically and creates both services in one click.
 
-```bash
-# Clone the repo
-git clone https://github.com/your-username/MyKnowledgeRAG.git
-cd MyKnowledgeRAG
+#### Steps
 
-# Copy and fill in your secrets
-cp Backend/.env.example Backend/.env
+1. Push this repo to GitHub.
+2. Go to [render.com](https://render.com) → **New** → **Blueprint**.
+3. Connect your GitHub repo — Render detects `render.yaml` automatically.
+4. In the Render dashboard, set your secret environment variables for **neuralvault-backend**:
 
-# Launch everything
-docker compose up --build
-```
+   | Variable | Value |
+   |----------|-------|
+   | `GEMINI_API_KEY` | your key |
+   | `GROQ_API_KEY` | your key |
+   | `HF_TOKEN` | your token |
+   | `DATABASE_USER` | your DB user |
+   | `DATABASE_PASSWORD` | your DB password |
+   | `DATABASE_NAME` | your DB name |
+   | `DATABASE_HOST` | your DB host (e.g. Neon pooler URL) |
+   | `NEON_USER` | if using Neon |
+   | `NEON_DB_PASSWORD` | if using Neon |
+   | `NEON_DB_HOST` | if using Neon |
+   | `NEON_DB_NAME` | if using Neon |
 
-| Service  | URL                        |
-|----------|----------------------------|
-| Frontend | http://localhost:3000      |
-| Backend  | http://localhost:8000      |
-| API Docs | http://localhost:8000/docs |
+5. After the first deploy, copy the backend URL (e.g. `https://neuralvault-backend.onrender.com`) and set it as `VITE_API_URL` in the frontend service's environment variables, then redeploy the frontend.
+
+| Service | Render URL |
+|---------|------------|
+| Backend API | `https://neuralvault-backend.onrender.com` |
+| API Docs | `https://neuralvault-backend.onrender.com/docs` |
+| Frontend | `https://neuralvault-frontend.onrender.com` |
+
+> **Note:** Render free-tier web services spin down after inactivity. The first request after a cold start may take 30–60s.
 
 ---
 
-### Option B — Manual Setup
+### Option B — Local Development
 
 #### 1. Clone the repository
 
@@ -301,8 +312,11 @@ The UI will be available at `http://localhost:3000`
 ### Backend
 
 ```bash
-# Run development server with hot reload
+# Start dev server (hot reload)
 uv run uvicorn main:app --reload
+
+# Start production server (Gunicorn + UvicornWorker)
+uv run gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
 
 # Run migrations
 uv run alembic upgrade head

@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     neon_db_host: str = Field(validation_alias="NEON_DB_HOST")
     neon_db_name: str
 
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000"]
+    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "https://neural-vault-sooty.vercel.app", "https://neural-vault-sooty.vercel.app/"]
 
 
     model_config = SettingsConfigDict(

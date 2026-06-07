@@ -2,7 +2,7 @@ from langchain_chroma import Chroma
 from langchain_community.document_loaders import PyPDFLoader, PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from app.utils.chroma_client import create_chroma_client
+from app.utils.qdrant_client import qdrant_client
 from uuid import uuid4, UUID
 import os
 
@@ -75,23 +75,20 @@ def split_documents(documents):
         raise
 
 
-def add_chunks_to_chroma_db(chunks, chroma_db_path: str = settings.vector_db_path):
+def add_chunks_to_vector_db(chunks):
     # add chunks to the chroma db
     try:
         print("___________adding chunks to chroma db_____________")
                 
-        chroma_db = create_chroma_client(chroma_db_path)
-        chroma_db.add_documents(documents=chunks)
+        vector_db = qdrant_client()
+        vector_db.add_documents(documents=chunks)
         print("_____________Chunks added to Chroma database______________")
-        print(f"ChromaDB count after adding chunks: {chroma_db._collection.count()}")
 
-        for vector in chroma_db._collection.get(include=["metadatas", "documents", "embeddings"])["metadatas"]:
-            print(f"Metadata for vector: {vector}")
-
-        return chroma_db
+        return vector_db
     except Exception as e:
         print(f"Error adding chunks to Chroma database: {e}")
         raise
+    
 
 
 def bm25_ingestion(doc_id, chunks):
@@ -133,7 +130,7 @@ def ingestion_pipeline(uploaded_file_path: str, job_id: UUID, db_session):
         update_document_metadata_service(db_session, id, DocumentStatus.chunked, total_pages, total_chunks)
 
         # Step 4: Add the chunks to chroma db
-        add_chunks_to_chroma_db(chunks=metadata_enriched_chunks)
+        add_chunks_to_vector_db(chunks=metadata_enriched_chunks)
 
         # Update document record in the database with status 'indexed'
         update_document_metadata_service(db_session, id, DocumentStatus.indexed)

@@ -38,3 +38,6 @@ xxhash==3.7.0
 zstandard==0.25.0
 fastapi==0.121.1
 uvicorn[standard]==0.38.0
+SQLAlchemy==2.0.43
+psycopg2-binary==2.9.10
+asyncpg==0.30.0

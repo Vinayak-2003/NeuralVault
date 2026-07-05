@@ -24,7 +24,6 @@ portalocker==3.2.0
 protobuf==7.35.0
 pydantic==2.13.4
 pydantic_core==2.46.4
-pywin32==312
 PyYAML==6.0.3
 qdrant-client==1.18.0
 requests==2.34.2

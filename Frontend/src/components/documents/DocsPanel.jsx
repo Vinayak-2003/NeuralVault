@@ -7,11 +7,11 @@ import { useApp } from "../../store/AppContext";
 const ALLOWED = [".pdf", ".txt", ".docx", ".md", ".csv"];
 
 const FILE_TYPE_COLORS = {
-  pdf:  { bg: "rgba(255,77,106,0.1)",  border: "rgba(255,77,106,0.3)",  text: "var(--red)" },
-  txt:  { bg: "rgba(124,111,247,0.1)", border: "rgba(124,111,247,0.3)", text: "var(--accent-bright)" },
-  docx: { bg: "rgba(0,229,160,0.1)",   border: "rgba(0,229,160,0.3)",   text: "var(--green)" },
-  md:   { bg: "rgba(255,165,82,0.1)",  border: "rgba(255,165,82,0.3)",  text: "var(--amber)" },
-  csv:  { bg: "rgba(77,171,247,0.1)",  border: "rgba(77,171,247,0.3)",  text: "var(--blue)" },
+  pdf:  { bg: "var(--red-dim)",    border: "rgba(239,68,68,0.18)",  text: "var(--red)" },
+  txt:  { bg: "var(--accent-dim)", border: "rgba(99,102,241,0.18)", text: "var(--accent-bright)" },
+  docx: { bg: "var(--green-dim)",  border: "rgba(16,185,129,0.18)", text: "var(--green)" },
+  md:   { bg: "var(--amber-dim)",  border: "rgba(245,158,11,0.18)", text: "var(--amber)" },
+  csv:  { bg: "var(--blue-dim)",   border: "rgba(59,130,246,0.18)", text: "var(--blue)" },
 };
 
 /* ── Pipeline Steps ───────────────────────────────────────────────── */
@@ -40,15 +40,15 @@ function PipelineStepper({ status, progress }) {
               {/* Step node */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, flex: "0 0 auto" }}>
                 <motion.div
-                  animate={active ? { scale: [1, 1.1, 1] } : {}}
-                  transition={{ duration: 1.2, repeat: Infinity }}
+                  animate={active ? { scale: [1, 1.05, 1] } : {}}
+                  transition={{ duration: 1.5, repeat: Infinity }}
                   style={{
                     width: 32, height: 32, borderRadius: "50%",
                     background: done ? "var(--green-dim)" : active ? "var(--accent-dim)" : "var(--bg-muted)",
-                    border: `1.5px solid ${done ? "rgba(0,229,160,0.4)" : active ? "var(--border-accent)" : "var(--border-dim)"}`,
+                    border: `1.5px solid ${done ? "rgba(16,185,129,0.4)" : active ? "var(--border-accent)" : "var(--border-dim)"}`,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     fontSize: done ? 13 : 14,
-                    boxShadow: active ? "var(--glow-sm)" : "none",
+                    boxShadow: "none",
                     color,
                     animation: done ? "step-complete 0.4s ease" : "none",
                   }}
@@ -75,13 +75,11 @@ function PipelineStepper({ status, progress }) {
                   overflow: "hidden",
                 }}>
                   {i === currentIdx - 1 && (
-                    <motion.div
-                      animate={{ x: ["0%", "100%"] }}
-                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                    <div
                       style={{
                         position: "absolute", inset: 0,
-                        background: "linear-gradient(90deg, transparent, var(--green), transparent)",
-                        opacity: 0.6,
+                        background: "var(--green)",
+                        opacity: 0.8,
                       }}
                     />
                   )}
@@ -118,7 +116,7 @@ function DropZone({ onFiles, uploading }) {
       onClick={() => !uploading && ref.current?.click()}
       animate={{
         borderColor: dragging ? "var(--accent)" : "var(--border-base)",
-        background: dragging ? "rgba(124,111,247,0.07)" : "var(--bg-raised)",
+        background: dragging ? "var(--bg-subtle)" : "var(--bg-raised)",
       }}
       transition={{ duration: 0.2 }}
       style={{
@@ -129,8 +127,8 @@ function DropZone({ onFiles, uploading }) {
         alignItems: "center", gap: 16,
         cursor: uploading ? "not-allowed" : "pointer",
         textAlign: "center",
-        boxShadow: dragging ? "inset 0 0 60px rgba(124,111,247,0.06), var(--glow-sm)" : "none",
-        transition: "box-shadow 0.2s",
+        boxShadow: "none",
+        transition: "border-color 0.2s, background 0.2s",
         position: "relative", overflow: "hidden",
       }}
     >
@@ -141,19 +139,6 @@ function DropZone({ onFiles, uploading }) {
         style={{ display: "none" }}
         onChange={e => handle(e.target.files)}
       />
-
-      {/* Animated ripple on drag */}
-      {dragging && (
-        <motion.div
-          animate={{ scale: [1, 2.5], opacity: [0.4, 0] }}
-          transition={{ duration: 1, repeat: Infinity }}
-          style={{
-            position: "absolute", width: 60, height: 60,
-            borderRadius: "50%", border: "1px solid var(--accent-bright)",
-            pointerEvents: "none",
-          }}
-        />
-      )}
 
       {/* Icon */}
       <motion.div
@@ -171,7 +156,7 @@ function DropZone({ onFiles, uploading }) {
           border: `1px solid ${dragging ? "var(--border-accent)" : "var(--border-dim)"}`,
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: 28,
-          boxShadow: dragging ? "var(--glow-sm)" : "none",
+          boxShadow: "none",
           transition: "all 0.2s",
         }}
       >
@@ -332,12 +317,12 @@ const DocCard = React.forwardRef(({ doc, onDelete, isDeleting }, ref) => {
             whileHover={!isDeleting ? { scale: 1.1 } : {}}
             whileTap={!isDeleting ? { scale: 0.9 } : {}}
             style={{
-              width: 32, height: 32, borderRadius: "var(--radius-sm)", border: "none",
+              width: 32, height: 32, borderRadius: "var(--radius-sm)",
               background: "var(--red-dim)",
               color: "var(--red)", cursor: isDeleting ? "not-allowed" : "pointer",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: 16, flexShrink: 0,
-              border: "1px solid rgba(255,77,106,0.25)",
+              border: "1px solid rgba(239,68,68,0.25)",
             }}
           >
             {isDeleting ? <Spinner size={12} color="var(--red)" /> : (

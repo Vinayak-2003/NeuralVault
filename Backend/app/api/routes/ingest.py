@@ -18,7 +18,7 @@ router = APIRouter(
 async def ingest_document(document: UploadFile, background_task: BackgroundTasks, db: Annotated[Session, Depends(get_db_session)]):
     try:
         job_id = uuid4()
-        background_task.add_task(document_ingestion, document=document, job_id=job_id, db=db)
+        background_task.add_task(document_ingestion, document=document, job_id=job_id)
         return {"job_id": str(job_id),
                 "message": "Document ingestion started in the background."}
     except Exception as e:

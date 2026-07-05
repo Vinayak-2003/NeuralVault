@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 from uuid import UUID
 from datetime import datetime
-from app.models.setting_model import SearchCategory
+from app.schemas.setting_schema import SearchCategory
 
 class SettingBase(BaseModel):
     chunk_size: int

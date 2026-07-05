@@ -2,8 +2,9 @@ from sqlalchemy import select
 import os
 
 from uuid import UUID
-from app.schemas.document_schema import Document, DocumentStatus
-from app.db.database import get_db_session
+from app.models.document_model import Document
+from app.models.enums import DocumentStatus
+
 
 def document_metadata_service(db_session,
                             id: UUID, 
@@ -38,8 +39,6 @@ def document_metadata_service(db_session,
         db_session.rollback()
         print(f"Error in document service: {e}")
         raise e
-    finally:
-        db_session.close()
 
 
 def update_document_metadata_service(db_session,
@@ -59,11 +58,15 @@ def update_document_metadata_service(db_session,
 
         fetch_doc.status = process_status
 
-        if pages is not None:
-            fetch_doc.total_pages = pages
+        if process_status == DocumentStatus.failed:
+            fetch_doc.total_pages = None
+            fetch_doc.total_chunks = None
+        else:
+            if pages is not None:
+                fetch_doc.total_pages = pages
 
-        if chunks is not None:
-            fetch_doc.total_chunks = chunks
+            if chunks is not None:
+                fetch_doc.total_chunks = chunks
 
         db_session.commit()
         db_session.refresh(fetch_doc)
@@ -74,5 +77,3 @@ def update_document_metadata_service(db_session,
         db_session.rollback()
         print(f"Error in document service: {e}")
         raise e
-    finally:
-        db_session.close()

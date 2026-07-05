@@ -10,15 +10,11 @@ def document_retrieval_output_generation(query: str, db):
         if not config:
             raise Exception("No active config found")
         
-        retrieved_docs = hybrid_retriever(query=query, top_k=config.top_k)
+        retrieved_docs = hybrid_retriever(query=query)
 
         print("__________retrieved docs in retrieval service_____________")
 
-        output_generation_response = output_generation(retrieved_docs=retrieved_docs, 
-                                                       query=query, 
-                                                       temperature=config.temperature)
-
-        return output_generation_response
+        return output_generation(retrieved_docs=retrieved_docs, query=query, temperature=config.temperature)
     except Exception as e:
         print(f"Error in retrieval service: {e}")
         raise e

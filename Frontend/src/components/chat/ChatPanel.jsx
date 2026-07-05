@@ -22,11 +22,11 @@ function ThinkingAnimation() {
         {[0, 1, 2].map(i => (
           <motion.div
             key={i}
-            animate={{ y: [0, -7, 0], opacity: [0.3, 1, 0.3] }}
-            transition={{ duration: 1, repeat: Infinity, delay: i * 0.22, ease: "easeInOut" }}
+            animate={{ y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 1, repeat: Infinity, delay: i * 0.2, ease: "easeInOut" }}
             style={{
-              width: 7, height: 7, borderRadius: "50%",
-              background: `linear-gradient(135deg, var(--accent), var(--accent-secondary))`,
+              width: 6, height: 6, borderRadius: "50%",
+              background: "var(--accent)",
             }}
           />
         ))}
@@ -43,7 +43,7 @@ function ThinkingAnimation() {
           Retrieving context
         </motion.span>
         <span style={{ opacity: 0.4 }}>·</span>
-        <span style={{ color: "var(--accent-bright)", opacity: 0.7 }}>Generating answer</span>
+        <span style={{ color: "var(--text-secondary)", opacity: 0.8 }}>Generating answer</span>
       </span>
     </div>
   );
@@ -129,13 +129,13 @@ function Bubble({ msg }) {
       <div style={{
         width: 34, height: 34, borderRadius: "50%", flexShrink: 0,
         background: isUser
-          ? "linear-gradient(135deg, var(--accent) 0%, var(--accent-secondary) 100%)"
+          ? "var(--accent)"
           : "var(--bg-overlay)",
-        border: `1.5px solid ${isUser ? "rgba(124,111,247,0.4)" : "var(--border-base)"}`,
+        border: `1.5px solid ${isUser ? "var(--border-accent)" : "var(--border-base)"}`,
         display: "flex", alignItems: "center", justifyContent: "center",
         fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13,
-        color: isUser ? "#fff" : "var(--accent-bright)",
-        boxShadow: isUser ? "var(--glow-sm)" : "none",
+        color: isUser ? "#fff" : "var(--text-secondary)",
+        boxShadow: "none",
         overflow: "hidden", position: "relative",
       }}>
         {isUser ? "V" : (
@@ -157,13 +157,13 @@ function Bubble({ msg }) {
       <div style={{ maxWidth: "78%", minWidth: 80 }}>
         <div style={{
           background: isUser
-            ? "linear-gradient(135deg, rgba(124,111,247,0.12), rgba(224,86,199,0.06))"
+            ? "var(--bg-muted)"
             : "var(--bg-raised)",
-          border: `1px solid ${isUser ? "rgba(124,111,247,0.22)" : "var(--border-dim)"}`,
+          border: `1px solid ${isUser ? "var(--border-base)" : "var(--border-dim)"}`,
           borderRadius: isUser ? "18px 5px 18px 18px" : "5px 18px 18px 18px",
           padding: "13px 17px",
           color: "var(--text-primary)", fontSize: 13, lineHeight: 1.7,
-          boxShadow: isUser ? "none" : "var(--shadow-xs)",
+          boxShadow: "none",
           position: "relative",
         }}>
           {msg.loading ? <ThinkingAnimation /> : (
@@ -248,38 +248,17 @@ function WelcomeState({ onSuggest }) {
         padding: "40px 24px", gap: 32, textAlign: "center",
       }}
     >
-      {/* Animated orb */}
-      <div style={{ position: "relative", width: 80, height: 80 }}>
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          style={{
-            position: "absolute", inset: -4,
-            borderRadius: "50%",
-            border: "1px dashed rgba(124,111,247,0.3)",
-          }}
-        />
-        <motion.div
-          animate={{ scale: [1, 1.06, 1], opacity: [0.7, 1, 0.7] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          style={{
-            width: 80, height: 80, borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(124,111,247,0.25) 0%, rgba(224,86,199,0.1) 60%, transparent 100%)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            border: "1px solid rgba(124,111,247,0.3)",
-            boxShadow: "0 0 40px rgba(124,111,247,0.2)",
-          }}
-        >
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="url(#grad1)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <defs>
-              <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#a89fff"/>
-                <stop offset="100%" stopColor="#e056c7"/>
-              </linearGradient>
-            </defs>
-            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-          </svg>
-        </motion.div>
+      {/* Minimalist Icon */}
+      <div style={{
+        width: 64, height: 64, borderRadius: "var(--radius)",
+        background: "var(--bg-raised)",
+        border: "1px solid var(--border-base)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        color: "var(--text-secondary)",
+      }}>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+        </svg>
       </div>
 
       {/* Heading */}
@@ -291,7 +270,7 @@ function WelcomeState({ onSuggest }) {
           Ask your knowledge base
         </h1>
         <p style={{
-          fontSize: 13.5, color: "var(--text-tertiary)",
+          fontSize: 13.5, color: "var(--text-secondary)",
           maxWidth: 420, lineHeight: 1.7, fontFamily: "var(--font-body)",
         }}>
           Upload documents in the Library tab, then ask questions here.
@@ -304,9 +283,9 @@ function WelcomeState({ onSuggest }) {
         {["Hybrid BM25 + Vector Search", "CrossEncoder Reranker", "Source Citations", "Streaming Answers"].map(f => (
           <span key={f} style={{
             padding: "5px 14px", borderRadius: 99,
-            background: "var(--accent-dim)",
-            border: "1px solid rgba(124,111,247,0.2)",
-            fontSize: 11.5, color: "var(--accent-bright)",
+            background: "var(--bg-raised)",
+            border: "1px solid var(--border-dim)",
+            fontSize: 11.5, color: "var(--text-secondary)",
             fontFamily: "var(--font-body)", fontWeight: 500,
           }}>
             {f}
@@ -327,8 +306,8 @@ function WelcomeState({ onSuggest }) {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.07 }}
-              whileHover={{ y: -2, borderColor: "var(--border-accent)" }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ y: -1, borderColor: "var(--border-base)" }}
+              whileTap={{ scale: 0.98 }}
               style={{
                 background: "var(--bg-raised)", border: "1px solid var(--border-dim)",
                 borderRadius: "var(--radius)", padding: "12px 14px",
@@ -501,22 +480,18 @@ export default function ChatPanel() {
           <motion.button
             onClick={handleSend}
             disabled={!canSend}
-            animate={{
-              background: canSend
-                ? ["linear-gradient(135deg, #7c6ff7, #e056c7)", "linear-gradient(135deg, #e056c7, #7c6ff7)"]
-                : "var(--bg-muted)",
-            }}
-            transition={{ duration: 2, repeat: canSend ? Infinity : 0, repeatType: "reverse" }}
-            whileHover={canSend ? { scale: 1.08 } : {}}
-            whileTap={canSend ? { scale: 0.92 } : {}}
+            whileHover={canSend ? { scale: 1.02 } : {}}
+            whileTap={canSend ? { scale: 0.98 } : {}}
             style={{
-              width: 34, height: 34, borderRadius: "var(--radius)",
+              width: 34, height: 34, borderRadius: "var(--radius-sm)",
               border: "none", flexShrink: 0,
               display: "flex", alignItems: "center", justifyContent: "center",
-              color: "#fff", fontSize: 15,
-              boxShadow: canSend ? "var(--glow-sm)" : "none",
+              background: canSend ? "var(--accent)" : "var(--bg-muted)",
+              color: canSend ? "#fff" : "var(--text-disabled)",
               cursor: canSend ? "pointer" : "not-allowed",
+              boxShadow: "none",
               opacity: canSend ? 1 : 0.4,
+              transition: "background var(--transition), color var(--transition)",
             }}
           >
             {loading ? <Spinner size={15} color="#fff" /> : (
@@ -533,7 +508,7 @@ export default function ChatPanel() {
           marginTop: 6, textAlign: "center",
           letterSpacing: "0.04em", fontFamily: "var(--font-mono)",
         }}>
-          LangChain · ChromaDB · CrossEncoder Reranker
+          LangChain · Qdrant · CrossEncoder Reranker
           <span style={{ margin: "0 6px", opacity: 0.4 }}>·</span>
           Shift+Enter for new line
         </div>

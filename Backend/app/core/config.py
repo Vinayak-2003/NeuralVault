@@ -1,7 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
 from typing import List
-import os
 
 class Settings(BaseSettings):
     GEMINI_API_KEY: str
@@ -9,10 +8,12 @@ class Settings(BaseSettings):
     HF_TOKEN: str
 
     document_path: str = "app/db/docs"
-    vector_db_path: str = "app/db/chroma_db"
+    chroma_db_path: str = "app/db/chroma_db"
 
     groq_chat_model: str = "llama-3.1-8b-instant"
-    gemini_embedding_model: str = "models/gemini-embedding-001"
+    gemini_embedding_model: str = "models/text-embedding-004"
+    
+    huggingface_embedding_model: str = "BAAI/bge-small-en"
 
     chunk_size: int = 1000
     chunk_overlap: int = 200
@@ -30,6 +31,12 @@ class Settings(BaseSettings):
 
     ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "https://neural-vault-sooty.vercel.app", "https://neural-vault-sooty.vercel.app/"]
 
+    QDRANT_DB_API_KEY: str
+    QDRANT_CLUSTER_ENDPOINT: str
+    QDRANT_COLLECTION_NAME: str = "neural-vault-docs"
+    QDRANT_DENSE_VECTOR_NAME: str = "neural-vault-vectors"
+    QDRANT_SPARSE_VECTOR_NAME: str = "neural-vault-keywords"
+    QDRANT_SPARSE_EMBEDDING: str = "Qdrant/bm25"
 
     model_config = SettingsConfigDict(
         env_file=".env",

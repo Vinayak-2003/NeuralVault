@@ -1,9 +1,7 @@
 from fastapi import UploadFile
 import os
 
-from app.core.config import Settings
-
-settings = Settings()
+from app.core.config import settings
 
 async def store_file(document: UploadFile):
     try:

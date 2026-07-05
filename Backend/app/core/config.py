@@ -1,7 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
 from typing import List
-import os
 
 class Settings(BaseSettings):
     GEMINI_API_KEY: str
@@ -13,6 +12,8 @@ class Settings(BaseSettings):
 
     groq_chat_model: str = "llama-3.1-8b-instant"
     gemini_embedding_model: str = "models/text-embedding-004"
+    
+    huggingface_embedding_model: str = "BAAI/bge-small-en"
 
     chunk_size: int = 1000
     chunk_overlap: int = 200

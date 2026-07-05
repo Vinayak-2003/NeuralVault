@@ -7,10 +7,12 @@ import asyncio
 from app.utils.save_file import store_file
 from app.rag.ingestion_pipeline import ingestion_pipeline
 
-from app.schemas.document_schema import Document, DocumentStatus
+from app.models.document_model import Document, DocumentStatus
+from app.db.database import get_new_session
 
 
-async def document_ingestion(document: UploadFile, job_id: UUID, db):
+async def document_ingestion(document: UploadFile, job_id: UUID):
+    db = get_new_session()
     try:
         filename = document.filename
 
@@ -33,6 +35,8 @@ async def document_ingestion(document: UploadFile, job_id: UUID, db):
     except Exception as e:
         print(f"Error in document ingestion: {e}")
         return {"status": "Ingestion failed", "error": str(e)}
+    finally:
+        db.close()
 
 
 async def ingestion_status(job_id: UUID, db_session):

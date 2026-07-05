@@ -1,9 +1,7 @@
 from langchain_chroma import Chroma
 from app.utils.embeddings import create_embeddings
-from app.core.config import Settings
+from app.core.config import settings
 import os
-
-settings = Settings()
 
 def create_chroma_client():
     chroma_db_path = settings.chroma_db_path

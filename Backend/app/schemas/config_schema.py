@@ -1,29 +1,69 @@
-from sqlalchemy import Column, String, Integer, Enum, Boolean, Float, DateTime, func, CheckConstraint
-from sqlalchemy.dialects.postgresql import UUID
-from uuid import uuid4
-from app.db.database import Base
-import enum
-
-class SearchCategory(enum.Enum):
-    Hybrid = "Hybrid"
-    Semantic = "Semantic"
-    Keyword = "Keyword"
+from pydantic import BaseModel, ConfigDict, model_validator
+from uuid import UUID
+from datetime import datetime
+from app.models.enums import SearchCategory
 
 
-class RAGConfig(Base):
-    __tablename__ = "rag_config"
+class BaseConfig(BaseModel):
+    chunk_size: int
+    chunk_overlap: int
+    top_k: int
+    search_category: SearchCategory
+    reranker: bool
+    temperature: float
+    stream: bool
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    top_k = Column(Integer, nullable=False, default=5)
-    search_category = Column(Enum(SearchCategory), nullable=False, default=SearchCategory.Semantic)
-    reranker = Column(Boolean, nullable=False, default=False)
-    temperature = Column(Float, nullable=False, default=0.2)
-    stream = Column(Boolean, nullable=False, default=False)
-    is_active = Column(Boolean, nullable=False, default=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    @model_validator(mode='before')
+    @classmethod
+    def map_search_type(cls, data):
+        if isinstance(data, dict):
+            # Map search_type (frontend) to search_category (backend)
+            if "search_type" in data and "search_category" not in data:
+                st = data["search_type"]
+                if st == "hybrid":
+                    data["search_category"] = SearchCategory.Hybrid
+                elif st == "vector":
+                    data["search_category"] = SearchCategory.Semantic
+                elif st == "bm25":
+                    data["search_category"] = SearchCategory.Keyword
+            
+            if "search_category" not in data:
+                data["search_category"] = SearchCategory.Semantic
+        return data
 
-    __table_args__ = (
-        CheckConstraint('top_k > 0', name='check_top_k_positive'),
-        CheckConstraint('temperature >= 0.0', name='check_temperature_non_negative'),
-        CheckConstraint('temperature <= 1.0', name='check_temperature_max'),
-    )
+
+class FetchConfig(BaseConfig):
+    id: UUID
+    is_active: bool
+    created_at: datetime
+    search_type: str = "hybrid"
+
+    @model_validator(mode='before')
+    @classmethod
+    def set_search_type(cls, data):
+        # Retrieve search_category from model attribute or dictionary
+        sc = None
+        if hasattr(data, "search_category"):
+            sc = getattr(data, "search_category")
+        elif isinstance(data, dict) and "search_category" in data:
+            sc = data.get("search_category")
+            
+        if sc is not None:
+            if hasattr(sc, "value"):
+                sc = sc.value
+            
+            st = "hybrid"
+            if sc == "Semantic":
+                st = "vector"
+            elif sc == "Keyword":
+                st = "bm25"
+            elif sc == "Hybrid":
+                st = "hybrid"
+
+            if isinstance(data, dict):
+                data["search_type"] = st
+            else:
+                setattr(data, "search_type", st)
+        return data
+
+    model_config = ConfigDict(from_attributes=True)

@@ -10,9 +10,10 @@ from app.rag.metadata_enricher import split_document_enricher
 from app.services.metadata_service import document_metadata_service, update_document_metadata_service
 from app.schemas.document_schema import DocumentStatus
 from app.rag.bm25_retriever import BM25RetrieverClass
+from app.utils.qdrant_client import qdrant_client
+from qdrant_client import models
 
-from app.core.config import Settings
-settings = Settings()
+from app.core.config import settings
 
 
 def load_pdf_document(file_path: str):
@@ -56,12 +57,23 @@ def load_directory(path: str = settings.document_path):
         raise
 
 
-def split_documents(documents):
+def split_documents(documents, db_session):
     try:
         print("___________document splitting_____________")
+        try:
+            from app.services.config_service import active_config
+            config = active_config(db_session)
+            chunk_size = config.chunk_size
+            chunk_overlap = config.chunk_overlap
+            print(f"Using active database configuration: chunk_size={chunk_size}, chunk_overlap={chunk_overlap}")
+        except Exception as config_err:
+            chunk_size = settings.chunk_size
+            chunk_overlap = settings.chunk_overlap
+            print(f"Could not load active database configuration, using static settings: {config_err}")
+
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=settings.chunk_size,
-            chunk_overlap=settings.chunk_overlap
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap
         )
 
         # split documents into chunks
@@ -102,8 +114,10 @@ def bm25_ingestion(doc_id, chunks):
 
 
 def ingestion_pipeline(uploaded_file_path: str, job_id: UUID, db_session):
+    id = uuid4()
+    total_pages = None
+    total_chunks = None
     try:
-        id = uuid4()
         # step 0: Create document record in the database with status 'processing'
         document_metadata_service(db_session, id, uploaded_file_path, DocumentStatus.processing, job_id)
         
@@ -111,7 +125,7 @@ def ingestion_pipeline(uploaded_file_path: str, job_id: UUID, db_session):
         loaded_document = load_pdf_document(file_path=uploaded_file_path)
 
         # Step 2: Split the document into chunks
-        chunks = split_documents(documents=loaded_document)
+        chunks = split_documents(documents=loaded_document, db_session=db_session)
 
         # Update document record in the database with status 'splitted'
         update_document_metadata_service(db_session, id, DocumentStatus.splitted)
@@ -138,5 +152,32 @@ def ingestion_pipeline(uploaded_file_path: str, job_id: UUID, db_session):
         return {"status": f"Document: '{uploaded_file_path}' ingested successfully"}
     except Exception as e:
         print(f"Error in ingestion pipeline: {e}")
-        update_document_metadata_service(db_session, id, DocumentStatus.failed, total_pages, total_chunks)
+        
+        # Clean up any partially ingested chunks from BM25
+        try:
+            bm25_retriever = BM25RetrieverClass()
+            bm25_retriever.delete_document(doc_id=str(id))
+            print(f"Cleaned up partial BM25 chunks for failed ingestion of doc_id: {id}")
+        except Exception as cleanup_err:
+            print(f"Failed to clean up BM25 chunks during ingestion failure: {cleanup_err}")
+
+        # Clean up any partially ingested chunks from Qdrant
+        try:
+            vector_db = qdrant_client()
+            vector_db.client.delete(
+                collection_name=settings.QDRANT_COLLECTION_NAME,
+                points_selector=models.Filter(
+                    must=[
+                        models.FieldCondition(
+                            key="metadata.id",
+                            match=models.MatchValue(value=str(id)),
+                        )
+                    ]
+                )
+            )
+            print(f"Cleaned up partial Qdrant chunks for failed ingestion of doc_id: {id}")
+        except Exception as cleanup_err:
+            print(f"Failed to clean up Qdrant chunks during ingestion failure: {cleanup_err}")
+
+        update_document_metadata_service(db_session, id, DocumentStatus.failed, None, None)
         raise

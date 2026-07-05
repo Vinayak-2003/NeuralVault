@@ -1,13 +1,8 @@
 from sqlalchemy import Column, Integer, Boolean, Float, DateTime, Enum, func
 from sqlalchemy.dialects.postgresql import UUID
 from uuid import uuid4
-import enum
+from .enums import SearchCategory
 from app.db.database import Base
-
-class SearchCategory(enum.Enum):
-    Semantic = "Semantic"
-    Keyword = "Keyword"
-    Hybrid = "Hybrid"
 
 class Setting(Base):
     __tablename__ = "settings"

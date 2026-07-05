@@ -146,26 +146,19 @@ export default function Sidebar({ tab, setTab, open, setOpen }) {
             transition={{ duration: 0.4, ease: "easeOut" }}
             style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}
           >
-            {/* Logo with glow ring */}
+            {/* Logo */}
             <div style={{ position: "relative", flexShrink: 0 }}>
-              <div style={{
-                position: "absolute", inset: -3,
-                borderRadius: 15, zIndex: 0,
-                background: "radial-gradient(circle, rgba(124,111,247,0.5), transparent 70%)",
-                filter: "blur(6px)",
-                animation: "border-glow 3s ease-in-out infinite",
-              }} />
               <img
                 src={logo}
                 alt="NeuralVault"
                 style={{
                   width: 40, height: 40, borderRadius: 11,
                   objectFit: "cover", position: "relative", zIndex: 1,
-                  border: "1px solid rgba(124,111,247,0.3)",
+                  border: "1px solid var(--border-base)",
                 }}
               />
             </div>
-
+            
             <div>
               <div className="text-gradient" style={{
                 fontFamily: "var(--font-display)", fontWeight: 800,
@@ -190,7 +183,7 @@ export default function Sidebar({ tab, setTab, open, setOpen }) {
               value={ready ? indexed : "–"}
             />
             <AnimatedStat
-              label="CHUNKS" color="var(--accent-bright)"
+              label="CHUNKS" color="var(--text-primary)"
               value={ready ? (totalChunks > 999 ? `${(totalChunks/1000).toFixed(1)}k` : totalChunks) : "–"}
             />
           </div>
@@ -221,14 +214,14 @@ export default function Sidebar({ tab, setTab, open, setOpen }) {
                     marginBottom: 4,
                     border: active ? "1px solid var(--border-accent)" : "1px solid transparent",
                     background: active
-                      ? "linear-gradient(135deg, rgba(124,111,247,0.12), rgba(224,86,199,0.05))"
+                      ? "var(--accent-dim)"
                       : "transparent",
-                    color: active ? "var(--accent-bright)" : "var(--text-secondary)",
+                    color: active ? "var(--text-primary)" : "var(--text-secondary)",
                     cursor: "pointer", textAlign: "left",
                     fontFamily: "var(--font-display)",
-                    boxShadow: active ? "var(--glow-sm), inset 0 1px 0 rgba(255,255,255,0.05)" : "none",
+                    boxShadow: "none",
                     position: "relative",
-                    transition: "background var(--transition), border-color var(--transition), color var(--transition), box-shadow var(--transition)",
+                    transition: "background var(--transition), border-color var(--transition), color var(--transition)",
                   }}
                 >
                   {/* Active left bar */}
@@ -236,10 +229,10 @@ export default function Sidebar({ tab, setTab, open, setOpen }) {
                     <motion.div
                       layoutId="sidebar-active-bar"
                       style={{
-                        position: "absolute", left: 0, top: "20%", bottom: "20%",
+                        position: "absolute", left: 0, top: "25%", bottom: "25%",
                         width: 3, borderRadius: "0 3px 3px 0",
-                        background: "linear-gradient(180deg, var(--accent-bright), var(--accent-secondary))",
-                        boxShadow: "0 0 8px var(--accent-glow)",
+                        background: "var(--accent)",
+                        boxShadow: "none",
                       }}
                       transition={{ type: "spring", stiffness: 400, damping: 35 }}
                     />
@@ -249,7 +242,7 @@ export default function Sidebar({ tab, setTab, open, setOpen }) {
                   <span style={{
                     flexShrink: 0,
                     opacity: active ? 1 : 0.5,
-                    color: active ? "var(--accent-bright)" : "currentColor",
+                    color: active ? "var(--accent)" : "currentColor",
                     transition: "opacity var(--transition), color var(--transition)",
                   }}>
                     <Icon />
@@ -312,7 +305,7 @@ export default function Sidebar({ tab, setTab, open, setOpen }) {
             {isOnline ? (
               <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <ServiceRow label="FastAPI Server" online={true} icon={<IconServer />} />
-                <ServiceRow label="ChromaDB" online={true} icon={<IconDatabase />} />
+                <ServiceRow label="Qdrant" online={true} icon={<IconDatabase />} />
                 <ServiceRow label="Hybrid Search" online={true} icon={
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
                 } />
@@ -331,7 +324,7 @@ export default function Sidebar({ tab, setTab, open, setOpen }) {
             fontSize: 9.5, color: "var(--text-disabled)",
             letterSpacing: "0.1em", fontFamily: "var(--font-mono)",
           }}>
-            NeuralVault v1.0 · LangChain · ChromaDB
+            NeuralVault v1.0 · LangChain · Qdrant
           </div>
         </div>
       </motion.aside>

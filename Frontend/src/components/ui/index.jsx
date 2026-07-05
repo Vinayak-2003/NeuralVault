@@ -100,9 +100,9 @@ export function Btn({
 
   const variants = {
     primary: {
-      background: "linear-gradient(135deg, var(--accent) 0%, #5f50d9 100%)",
+      background: "var(--accent)",
       border: "none", color: "#fff",
-      boxShadow: "0 4px 20px var(--accent-glow)",
+      boxShadow: "none",
     },
     secondary: {
       background: "var(--bg-subtle)",
@@ -110,14 +110,14 @@ export function Btn({
     },
     danger: {
       background: "var(--red-dim)",
-      border: "1px solid rgba(255,77,106,0.3)", color: "var(--red)",
+      border: "1px solid rgba(255,77,106,0.25)", color: "var(--red)",
     },
     ghost: {
       background: "var(--bg-raised)",
       border: "1px solid var(--border-base)", color: "var(--text-secondary)",
     },
     success: {
-      background: "linear-gradient(135deg, var(--green) 0%, #00be84 100%)",
+      background: "var(--green)",
       border: "none", color: "#fff",
     },
   };
@@ -127,8 +127,8 @@ export function Btn({
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
-      whileHover={!disabled && !loading ? { scale: 1.02, opacity: 0.95 } : {}}
-      whileTap={!disabled && !loading ? { scale: 0.97 } : {}}
+      whileHover={!disabled && !loading ? { scale: 1.01, opacity: 0.95 } : {}}
+      whileTap={!disabled && !loading ? { scale: 0.98 } : {}}
       style={{
         display: "inline-flex", alignItems: "center", gap: 7,
         padding: sizes[size],
@@ -136,25 +136,13 @@ export function Btn({
         fontSize: fsize[size], fontWeight: 600,
         cursor: (disabled || loading) ? "not-allowed" : "pointer",
         opacity: disabled ? 0.45 : 1,
-        transition: "box-shadow var(--transition), opacity var(--transition)",
+        transition: "opacity var(--transition), background var(--transition)",
         fontFamily: "var(--font-display)",
         position: "relative", overflow: "hidden",
         letterSpacing: "-0.01em",
         ...variants[variant], ...sx,
       }}
     >
-      {/* Shimmer sweep on primary */}
-      {variant === "primary" && !disabled && (
-        <motion.div
-          animate={{ x: ["-100%", "200%"] }}
-          transition={{ duration: 3, repeat: Infinity, repeatDelay: 3, ease: "easeInOut" }}
-          style={{
-            position: "absolute", top: 0, left: 0, width: "60%", height: "100%",
-            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent)",
-            pointerEvents: "none",
-          }}
-        />
-      )}
       {loading ? <Spinner size={fsize[size] - 1} color={variant === "primary" || variant === "success" ? "#fff" : "var(--accent)"} /> : (
         icon && <span style={{ fontSize: fsize[size] }}>{icon}</span>
       )}
@@ -172,14 +160,14 @@ export function Toggle({ value, onChange }) {
       onClick={() => onChange(!value)}
       whileTap={{ scale: 0.95 }}
       style={{
-        width: 46, height: 26, borderRadius: 13, cursor: "pointer",
+        width: 44, height: 24, borderRadius: 12, cursor: "pointer",
         background: value
-          ? "linear-gradient(135deg, var(--accent), var(--accent-secondary))"
+          ? "var(--accent)"
           : "var(--bg-muted)",
-        border: `1.5px solid ${value ? "var(--border-accent)" : "var(--border-dim)"}`,
+        border: `1px solid ${value ? "var(--border-accent)" : "var(--border-base)"}`,
         position: "relative",
-        transition: "background 0.25s, border-color 0.25s",
-        boxShadow: value ? "var(--glow-sm)" : "none",
+        transition: "background 0.2s, border-color 0.2s",
+        boxShadow: "none",
       }}
     >
       <motion.div
@@ -191,7 +179,7 @@ export function Toggle({ value, onChange }) {
           background: value
             ? "#fff"
             : "var(--text-disabled)",
-          boxShadow: "0 1px 5px rgba(0,0,0,0.5)",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.4)",
         }}
       />
     </motion.div>
@@ -254,7 +242,7 @@ export function ProgressBar({ value, label = "Processing…" }) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10, fontSize: 12.5, alignItems: "center" }}>
         <span style={{ color: "var(--text-secondary)", fontFamily: "var(--font-body)" }}>{label}</span>
-        <span style={{ color: "var(--accent-bright)", fontWeight: 700, fontFamily: "var(--font-mono)" }}>
+        <span style={{ color: "var(--text-primary)", fontWeight: 705, fontFamily: "var(--font-mono)" }}>
           {value}%
         </span>
       </div>
@@ -267,11 +255,9 @@ export function ProgressBar({ value, label = "Processing…" }) {
           animate={{ width: `${value}%` }}
           transition={{ ease: "easeOut", duration: 0.4 }}
           style={{
-            height: "100%", borderRadius: 99, position: "relative",
-            background: "linear-gradient(90deg, var(--accent-dark), var(--accent-bright), var(--accent-secondary))",
-            backgroundSize: "200% 100%",
-            boxShadow: "0 0 10px var(--accent-glow)",
-            animation: "progress-shine 2s linear infinite",
+            height: "100%", borderRadius: 99,
+            background: "var(--accent)",
+            boxShadow: "none",
           }}
         />
       </div>
@@ -321,8 +307,8 @@ export function SourceChip({ file, page, score }) {
       <span style={{
         fontSize: 8.5, fontWeight: 800, letterSpacing: "0.06em",
         background: "var(--accent-dim)",
-        border: "1px solid rgba(124,111,247,0.2)",
-        color: "var(--accent-bright)",
+        border: "1px solid var(--border-base)",
+        color: "var(--text-secondary)",
         padding: "1px 5px", borderRadius: "var(--radius-xs)", flexShrink: 0,
         fontFamily: "var(--font-mono)",
       }}>
@@ -365,35 +351,35 @@ export function Empty({ icon, title, body, action }) {
         gap: 14, padding: "64px 24px", textAlign: "center",
       }}
     >
-      {/* Icon with float animation */}
+      {/* Icon wrapper */}
       <motion.div
-        animate={{ y: [0, -8, 0] }}
+        animate={{ y: [0, -4, 0] }}
         transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
         style={{
-          width: 72, height: 72, borderRadius: "var(--radius-xl)",
-          background: "var(--accent-dim)",
-          border: "1px solid rgba(124,111,247,0.2)",
+          width: 64, height: 64, borderRadius: "var(--radius)",
+          background: "var(--bg-raised)",
+          border: "1px solid var(--border-base)",
           display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 0 40px rgba(124,111,247,0.1)",
+          boxShadow: "none",
         }}
       >
         {typeof icon === "string"
-          ? <span style={{ fontSize: 32, lineHeight: 1 }}>{icon}</span>
+          ? <span style={{ fontSize: 28, lineHeight: 1 }}>{icon}</span>
           : icon
         }
       </motion.div>
 
       <div style={{
         fontFamily: "var(--font-display)", fontWeight: 700,
-        fontSize: 17, color: "var(--text-primary)", letterSpacing: "-0.02em",
+        fontSize: 16, color: "var(--text-primary)", letterSpacing: "-0.01em",
       }}>
         {title}
       </div>
 
       {body && (
         <div style={{
-          fontSize: 13, color: "var(--text-tertiary)",
-          maxWidth: 340, lineHeight: 1.7, fontFamily: "var(--font-body)",
+          fontSize: 13, color: "var(--text-secondary)",
+          maxWidth: 320, lineHeight: 1.65, fontFamily: "var(--font-body)",
         }}>
           {body}
         </div>

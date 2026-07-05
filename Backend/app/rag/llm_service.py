@@ -2,10 +2,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from langchain_groq import ChatGroq
 
-from app.core.config import Settings
-
-settings = Settings()
-
+from app.core.config import settings
 
 def output_generation(retrieved_docs: str, query: str, temperature: float):
     try:

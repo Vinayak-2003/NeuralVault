@@ -1,10 +1,5 @@
-from app.core.config import Settings
+from app.core.config import settings
 from app.utils.qdrant_client import qdrant_client
-
-from app.rag.bm25_retriever import BM25RetrieverClass
-
-settings = Settings()
-
 
 def hybrid_retriever(query: str):
     try:

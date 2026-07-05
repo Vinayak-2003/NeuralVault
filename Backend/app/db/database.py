@@ -1,12 +1,11 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, Session
-from app.core.config import Settings
+from app.core.config import settings
 
-settings = Settings()
 Base = declarative_base()
 
-engine, async_session_factory = None, None
+engine, session_factory, async_session_factory = None, None, None
 
 def local_pgsql_db_url():
     return "postgresql://{0}:{1}@{2}:{3}/{4}".format(
@@ -46,7 +45,15 @@ def init_db():
         raise e
 
 
+def get_new_session() -> Session:
+    if session_factory is None:
+        raise RuntimeError("Database session factory is not initialized. Call init_db() first.")
+    return session_factory()
+
+
 def get_db_session():
+    if session_factory is None:
+        raise RuntimeError("Database session factory is not initialized. Call init_db() first.")
     db: Session = session_factory()
     try:
         yield db

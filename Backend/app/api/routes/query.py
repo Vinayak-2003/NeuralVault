@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from app.models.query_model import QueryModel
+from app.schemas.query_schema import QueryModel
 from sqlalchemy.orm import Session
 from typing import Annotated
 

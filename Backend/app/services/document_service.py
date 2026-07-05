@@ -22,8 +22,8 @@ def delete_document_id(db_session, doc_id: str):
             select(Document).where(Document.id == doc_id)
         )
         document = document.scalar_one_or_none()
-        # if document is None:
-        #     return False
+        if document is None:
+            return False
         
         actual_doc_id = str(document.doc_id)
         

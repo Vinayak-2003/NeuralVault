@@ -5,8 +5,8 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from app.schemas.document_schema import Document
-from app.schemas.config_schema import RAGConfig
+from app.models.document_model import Document
+from app.models.config_model import RAGConfig
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

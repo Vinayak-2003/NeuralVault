@@ -4,7 +4,7 @@ from typing import Annotated
 
 from app.db.database import get_db_session
 from app.services.config_service import create_config, active_config, create_default_config
-from app.models.config_model import BaseConfig
+from app.schemas.config_schema import BaseConfig
 
 router = APIRouter(
     prefix="/config",
@@ -19,7 +19,7 @@ def get_active_config(db: Annotated[Session, Depends(get_db_session)]):
 
 @router.post("/")
 def create_setting(config_data: BaseConfig, db: Annotated[Session, Depends(get_db_session)]):
-    return create_config(db)
+    return create_config(config_data, db)
 
 
 @router.post("/default")

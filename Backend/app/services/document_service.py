@@ -1,13 +1,10 @@
 from sqlalchemy import select
 
-from app.schemas.document_schema import Document
-from app.utils.chroma_client import create_chroma_client
-
+from app.models.document_model import Document
 from app.rag.bm25_retriever import BM25RetrieverClass
-
-from app.core.config import Settings
-settings = Settings()
-
+from app.core.config import settings
+from app.utils.qdrant_client import qdrant_client
+from qdrant_client import models
 
 def all_documents(db_session):
     try:
@@ -27,18 +24,40 @@ def delete_document_id(db_session, doc_id: str):
         document = document.scalar_one_or_none()
         if document is None:
             return False
+        
+        actual_doc_id = str(document.doc_id)
+        
         db_session.delete(document)
         db_session.commit()
 
-        chroma_db = create_chroma_client(settings.vector_db_path)
-        chroma_db._collection.delete(
-            where={"id": str(doc_id)}
-        )
+        # Delete chunks from Qdrant DB
+        try:
+            vector_db = qdrant_client()
+            vector_db.client.delete(
+                collection_name=settings.QDRANT_COLLECTION_NAME,
+                points_selector=models.Filter(
+                    must=[
+                        models.FieldCondition(
+                            key="metadata.id",
+                            match=models.MatchValue(value=actual_doc_id),
+                        )
+                    ]
+                )
+            )
+            print(f"Deleted chunks from Qdrant for doc_id: {actual_doc_id}")
+        except Exception as q_err:
+            print(f"Failed to delete chunks from Qdrant: {q_err}")
 
-        bm25_retriever = BM25RetrieverClass()
-        bm25_retriever.delete_document(doc_id=str(doc_id))
+        # Delete chunks from BM25 retriever
+        try:
+            bm25_retriever = BM25RetrieverClass()
+            bm25_retriever.delete_document(doc_id=actual_doc_id)
+            print(f"Deleted chunks from BM25 for doc_id: {actual_doc_id}")
+        except Exception as bm25_err:
+            print(f"Failed to delete chunks from BM25: {bm25_err}")
 
         return True
     except Exception as e:
+        db_session.rollback()
         print(f"Error deleting document: {e}")
         raise e

@@ -62,11 +62,11 @@ const API_DOCS = [
   { method: "POST",   path: "/ingest/",                  desc: "Upload files · multipart/form-data field 'files' → { job_id }" },
   { method: "GET",    path: "/ingest/status/{job_id}",   desc: "Poll progress → { status, progress: 0-100, doc_id }" },
   { method: "GET",    path: "/documents/",               desc: "List all docs with metadata" },
-  { method: "DELETE", path: "/documents/{id}",           desc: "Remove from ChromaDB + PostgreSQL" },
+  { method: "DELETE", path: "/documents/{id}",           desc: "Remove from Qdrant + PostgreSQL" },
   { method: "POST",   path: "/query/",                   desc: "{ query, top_k, doc_filter } → { answer, sources, latency_ms }" },
   { method: "GET",    path: "/config/",                  desc: "Get current pipeline configuration" },
   { method: "POST",   path: "/config/",                  desc: "Save pipeline configuration" },
-  { method: "GET",    path: "/health/",                  desc: "Backend + ChromaDB + model health status" },
+  { method: "GET",    path: "/health/",                  desc: "Backend + Qdrant + model health status" },
 ];
 
 const METHOD_COLOR  = { GET: "var(--green)", POST: "var(--amber)", DELETE: "var(--red)" };
@@ -81,23 +81,23 @@ function Section({ title, icon: Icon }) {
     }}>
       <div style={{
         width: 28, height: 28, borderRadius: "var(--radius-sm)",
-        background: "var(--accent-dim)",
-        border: "1px solid rgba(124,111,247,0.25)",
+        background: "var(--bg-raised)",
+        border: "1px solid var(--border-base)",
         display: "flex", alignItems: "center", justifyContent: "center",
-        color: "var(--accent-bright)", flexShrink: 0,
+        color: "var(--text-secondary)", flexShrink: 0,
       }}>
         <Icon />
       </div>
       <div style={{
         fontSize: 11, fontWeight: 700, letterSpacing: "0.12em",
-        color: "var(--accent-bright)", textTransform: "uppercase",
+        color: "var(--text-primary)", textTransform: "uppercase",
         fontFamily: "var(--font-display)",
       }}>
         {title}
       </div>
       <div style={{
         flex: 1, height: 1,
-        background: "linear-gradient(90deg, rgba(124,111,247,0.4), transparent)",
+        background: "linear-gradient(90deg, var(--border-strong), transparent)",
       }} />
     </div>
   );

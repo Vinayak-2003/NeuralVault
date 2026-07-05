@@ -10,9 +10,7 @@ from app.api.routes.health import router as health_check_router
 
 from app.db.database import init_db, get_db_session
 
-from app.core.config import Settings
-
-settings = Settings()
+from app.core.config import settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -44,6 +42,6 @@ app.add_middleware(
     allow_credentials=True,
 )
 
-app.get("/")
+@app.get("/")
 def root():
     return {"message": "Welcome to MyKnowledgeRAG API!"}

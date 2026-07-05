@@ -1,10 +1,8 @@
 from langchain_huggingface import HuggingFaceEmbeddings
 
-from app.core.config import Settings
-
-settings = Settings()
+from app.core.config import settings
 
 def create_embeddings():
     return HuggingFaceEmbeddings(
-        model_name="BAAI/bge-small-en",
+        model_name=settings.huggingface_embedding_model
     )
